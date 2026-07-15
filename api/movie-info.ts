@@ -21,7 +21,7 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "movieCd parameter is required and must be a string" });
     }
 
-    const url = `https://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=${KOBIS_API_KEY}&movieCd=${movieCd}`;
+    const url = `https://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=${KOBIS_API_KEY}&movieCd=${movieCd}`;
     
     console.log(`[Vercel API] Fetching Movie Info for code: ${movieCd}`);
     const response = await fetch(url);
