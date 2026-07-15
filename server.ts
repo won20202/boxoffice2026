@@ -19,15 +19,13 @@ const ai = new GoogleGenAI({
   },
 });
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
 
-  // JSON middleware
-  app.use(express.json());
+// JSON middleware
+app.use(express.json());
 
-  // API Route: Generate Detailed Movie Review using Gemini AI
-  app.post("/api/generate-review", async (req, res) => {
+// API Route: Generate Detailed Movie Review using Gemini AI
+app.post("/api/generate-review", async (req, res) => {
     try {
       const { movieNm, directors, genres, actors, rating, briefReview, tone } = req.body;
 
@@ -129,24 +127,31 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+if (!process.env.VERCEL) {
+  const startServer = async () => {
+    const PORT = 3000;
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+    // Vite middleware for development
+    if (process.env.NODE_ENV !== "production") {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  };
+
+  startServer();
 }
 
-startServer();
+export default app;
